@@ -1,0 +1,57 @@
+---
+- name: Install apache2 packages
+  apt: name="apache2" state="present"
+
+- name: Install apache2.conf
+  copy: 
+    src: "apache2.conf"
+    dest: "/etc/apache2/apache2.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload apache
+
+- name: Install security.conf
+  copy: 
+    src: "security.conf"
+    dest: "/etc/apache2/conf-available/security.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload apache
+
+- name: Enable security.conf
+  command: "a2enconf -q security.conf"
+  args:
+    creates: "/etc/apache2/conf-enabled/security.conf"
+  notify: reload apache
+
+- name: Install default index.html
+  copy: 
+    src: "index.html"
+    dest: "/var/www/html/index.html"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Check Apache service is started and enabled on boot
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+- name: Install vpoilvert.com
+  copy: 
+    src: "vpoilvert.com.conf"
+    dest: "/etc/apache2/sites-available/vpoilvert.com.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload apache
+
+- name: Enable vpoilvert.com
+  command: "a2ensite -q vpoilvert.com.conf"
+  args:
+    creates: "/etc/apache2/sites-enabled/vpoilvert.com.conf"
+  notify: reload apache
+

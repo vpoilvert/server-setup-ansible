@@ -1,0 +1,34 @@
+---
+- name: Install dependencies
+  apt:
+    name: "{{ item }}"
+    state: "present"
+    update_cache: yes
+    cache_valid_time: "3600"
+  with_items:
+    - "apt-transport-https"
+    - "ca-certificates"
+    - "curl"   
+    - "gnupg2"
+    - "software-properties-common"
+
+- name: Check if Docker GPG key should be installed
+  command: "apt-key fingerprint 0EBFCD88"
+  register: apt_key
+  changed_when: apt_key.stdout == ""
+
+- name: Install Docker GPG key
+  shell: 'curl -fsSL https://download.docker.com/linux/$(. /etc/os-release; echo "$ID")/gpg | apt-key add -'
+  when: apt_key.stdout == ""
+
+- name: Install Docker stable repository
+  shell: 'add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/$(. /etc/os-release; echo "$ID") $(lsb_release -cs) stable"'
+  when: apt_key.stdout == ""
+
+- name: Install docker-ce
+  apt:
+    name: "docker-ce"
+    update_cache: yes
+    cache_valid_time: "0"
+  when: apt_key.stdout == ""
+

@@ -1,0 +1,8 @@
+---
+- name: reload iptables
+  service: 
+    name: "{{ item }}"
+    state: "restarted"
+  with_items:
+    - "netfilter-persistent"
+    - "fail2ban"

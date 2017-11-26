@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+    - base_packages                        # Install useful packages
+    - remote_user                          # Create user used for remote login and set up ssh keys
+    - sshd                                 # Configure ssh daemon (disable root login, add some security)
+    - fail2ban                             # Install fail2ban to ban ips trying to brute force ssh
+    - iptables                             # Add persistent iptables configuration to block almost everything
+    - network_security                     # Configure linux kernel to improve network security
+    - apache2                              # Install and configure apache2 server
+    - transmission-daemon                  # Install and configure transmission-daemon server
+    - docker                               # Install Docker comunity edition

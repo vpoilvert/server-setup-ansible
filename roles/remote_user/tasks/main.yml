@@ -1,0 +1,20 @@
+---
+- name: Create remote user
+  user: name="{{ remote_user_name }}"
+
+- name: Create .ssh folder
+  file:
+    path: "/home/{{ remote_user_name }}/.ssh"
+    state: directory
+    owner: "{{ remote_user_name }}"
+    group: "{{ remote_user_name }}"
+    mode: 0700
+
+- name: Install remote user ssh keys
+  copy:
+    src: "authorized_keys"
+    dest: "/home/{{ remote_user_name }}/.ssh/authorized_keys"
+    owner: "{{ remote_user_name }}"
+    group: "{{ remote_user_name }}"
+    mode: 0600
+

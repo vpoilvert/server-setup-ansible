@@ -1,0 +1,41 @@
+---
+- name: Install transmission-daemon package
+  apt: name="transmission-daemon" state="present"
+
+- name: Stop transmission-daemon
+  service:
+    name: "transmission-daemon"
+    state: stopped
+
+- name: Create download directory
+  file:
+    path: "{{ transmission_download_dir }}"
+    state: directory
+    owner: debian-transmission
+    group: debian-transmission
+    mode: "0775"
+
+- name: Copy settings.json
+  template: 
+    src: "settings.json.j2"
+    dest: "/etc/transmission-daemon/settings.json"
+    owner: debian-transmission
+    group: debian-transmission
+    mode: 0600
+
+- name: Configure UDP read buffer size
+  sysctl:
+    name: "net.core.rmem_max"
+    value: 16777216
+    state: present
+
+- name: Configure UDP write buffer size
+  sysctl:
+    name: "net.core.wmem_max"
+    value: 4194304
+    state: present
+
+- name: Start transmission-daemon
+  service:
+    name: "transmission-daemon"
+    state: started

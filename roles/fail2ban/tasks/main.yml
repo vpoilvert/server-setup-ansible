@@ -1,0 +1,12 @@
+---
+- name: Install fail2ban package
+  apt: name="fail2ban" state="present"
+
+- name: Configure fail2ban
+  template:
+    src: "fail2ban.conf.j2"
+    dest: "/etc/fail2ban/fail2ban.conf"
+  notify: restart fail2ban
+
+- name: Flush handlers
+  meta: flush_handlers
